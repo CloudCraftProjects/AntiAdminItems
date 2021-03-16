@@ -1,0 +1,14 @@
+name: AntiAdminItems
+version: @version@
+main: tk.booky.antiadminitems.AntiAdminItemsMain
+api-version: 1.13
+authors: [ booky10 ]
+website: https://booky.tk/
+permissions:
+  adminitems.*:
+    description: Have all the permission for this plugin, excluding the bypass permission.
+    default: op
+    children:
+      adminitems.use:
+        default: false
+        description: The bypass permission for this plugin, this should not be given out.
