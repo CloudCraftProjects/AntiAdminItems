@@ -17,7 +17,7 @@ public class BlockListener implements Listener {
     }
 
     @EventHandler
-    public void onBreak(BlockPlaceEvent event) {
+    public void onPlace(BlockPlaceEvent event) {
         if (event.getPlayer().hasPermission(Constants.BYPASS_PERMISSION) || !Constants.ADMIN_ITEMS.contains(event.getBlock().getType())) return;
         event.setCancelled(true);
     }
