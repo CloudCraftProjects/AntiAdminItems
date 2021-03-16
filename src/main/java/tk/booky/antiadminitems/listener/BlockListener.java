@@ -19,6 +19,7 @@ public class BlockListener implements Listener {
     @EventHandler
     public void onPlace(BlockPlaceEvent event) {
         if (event.getPlayer().hasPermission(Constants.BYPASS_PERMISSION) || !Constants.ADMIN_ITEMS.contains(event.getBlock().getType())) return;
+        if (event.getItemInHand().getType().equals(Material.ENDER_EYE) && event.getBlock().getType().equals(Material.END_PORTAL_FRAME)) return;
         event.setCancelled(true);
     }
 }
