@@ -1,7 +1,6 @@
 package tk.booky.antiadminitems.listener;
 // Created by booky10 in AntiAdminItems (10:38 16.03.21)
 
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -31,10 +30,8 @@ public class MiscListener implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getWhoClicked().hasPermission(Constants.BYPASS_PERMISSION) || event.getView().getTitle().endsWith("'s Inventory") || Constants.EXCLUDED_INVENTORIES.contains(event.getView().getType())) return;
-        HumanEntity player = event.getWhoClicked();
 
         event.setCurrentItem(ItemProcessor.processItem(event.getCurrentItem()));
         event.getInventory().setContents(ItemProcessor.processItems(event.getInventory().getContents()));
-        player.getInventory().setContents(ItemProcessor.processItems(player.getInventory().getContents()));
     }
 }
