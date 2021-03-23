@@ -4,6 +4,7 @@ package tk.booky.antiadminitems.utils;
 import org.bukkit.ChatColor;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionType;
@@ -44,6 +45,8 @@ public final class ItemProcessor {
                         meta.addEnchant(enchantment, enchantment.getMaxLevel(), true);
                     }
                 });
+
+                if (meta instanceof FireworkMeta && ((FireworkMeta) meta).hasEffects() && ((FireworkMeta) meta).getEffectsSize() > 8) ((FireworkMeta) meta).clearEffects();
 
                 meta.setAttributeModifiers(null);
                 meta.setDisplayName(ChatColor.stripColor(meta.getDisplayName()));
