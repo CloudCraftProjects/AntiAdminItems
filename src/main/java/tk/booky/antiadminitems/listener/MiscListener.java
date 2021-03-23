@@ -8,6 +8,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerAttemptPickupItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.ItemStack;
 import tk.booky.antiadminitems.utils.Constants;
 import tk.booky.antiadminitems.utils.ItemProcessor;
 
@@ -25,15 +26,27 @@ public class MiscListener implements Listener {
     @EventHandler
     public void onPickup(PlayerAttemptPickupItemEvent event) {
         if (event.getPlayer().hasPermission(Constants.BYPASS_PERMISSION)) return;
-        event.getItem().setItemStack(ItemProcessor.processItem(event.getItem().getItemStack()));
+
+        ItemStack replaced = ItemProcessor.processItem(event.getItem().getItemStack());
+        if (replaced == Constants.REPLACE_ITEM) {
+            event.setCancelled(true);
+            event.getItem().remove();
+        } else {
+            event.getItem().setItemStack(replaced);
+        }
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getWhoClicked().hasPermission(Constants.BYPASS_PERMISSION) || event.getInventory().getSize() == 45 || Constants.EXCLUDED_INVENTORIES.contains(event.getView().getType())) return;
 
-        event.setCurrentItem(ItemProcessor.processItem(event.getCurrentItem()));
-        event.getInventory().setContents(ItemProcessor.processItems(event.getInventory().getContents()));
+        ItemStack replaced = ItemProcessor.processItem(event.getCurrentItem());
+        if (replaced == Constants.REPLACE_ITEM) {
+            event.setCurrentItem(Constants.REPLACE_ITEM);
+            event.setCancelled(true);
+        } else {
+            event.setCurrentItem(replaced);
+        }
     }
 
     @EventHandler
