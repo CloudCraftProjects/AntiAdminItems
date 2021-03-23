@@ -41,7 +41,7 @@ public class MiscListener implements Listener {
         if (event.getWhoClicked().hasPermission(Constants.BYPASS_PERMISSION) || event.getInventory().getSize() == 45 || Constants.EXCLUDED_INVENTORIES.contains(event.getView().getType())) return;
 
         ItemStack replaced = ItemProcessor.processItem(event.getCurrentItem());
-        if (replaced == Constants.REPLACE_ITEM) {
+        if (replaced.equals(Constants.REPLACE_ITEM)) {
             event.setCurrentItem(Constants.REPLACE_ITEM);
             event.setCancelled(true);
         } else if (!replaced.equals(event.getCurrentItem())) {
