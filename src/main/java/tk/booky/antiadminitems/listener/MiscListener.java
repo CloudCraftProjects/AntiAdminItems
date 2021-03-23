@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.event.player.PlayerAttemptPickupItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
@@ -55,5 +56,18 @@ public class MiscListener implements Listener {
 
         event.setCancelled(true);
         event.setDamage(0);
+    }
+
+    @EventHandler
+    public void onCreative(InventoryCreativeEvent event) {
+        if (event.getWhoClicked().hasPermission(Constants.BYPASS_PERMISSION)) return;
+        if (event.getCursor().getType().isAir()) return;
+
+        ItemStack replaced = ItemProcessor.processItem(event.getCursor());
+        if (replaced.equals(Constants.REPLACE_ITEM)) {
+            event.setCancelled(true);
+        } else if (!replaced.equals(event.getCursor())) {
+            event.setCurrentItem(replaced);
+        }
     }
 }
