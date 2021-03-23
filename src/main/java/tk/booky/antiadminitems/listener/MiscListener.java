@@ -44,7 +44,7 @@ public class MiscListener implements Listener {
         if (replaced == Constants.REPLACE_ITEM) {
             event.setCurrentItem(Constants.REPLACE_ITEM);
             event.setCancelled(true);
-        } else {
+        } else if (!replaced.equals(event.getCurrentItem())) {
             event.setCurrentItem(replaced);
         }
     }
