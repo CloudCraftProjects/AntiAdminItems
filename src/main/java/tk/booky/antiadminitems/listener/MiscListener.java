@@ -30,7 +30,7 @@ public class MiscListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (event.getWhoClicked().hasPermission(Constants.BYPASS_PERMISSION) || event.getView().getTitle().endsWith("'s Inventory") || Constants.EXCLUDED_INVENTORIES.contains(event.getView().getType())) return;
+        if (event.getWhoClicked().hasPermission(Constants.BYPASS_PERMISSION) || event.getInventory().getSize() == 45 || Constants.EXCLUDED_INVENTORIES.contains(event.getView().getType())) return;
 
         event.setCurrentItem(ItemProcessor.processItem(event.getCurrentItem()));
         event.getInventory().setContents(ItemProcessor.processItems(event.getInventory().getContents()));
