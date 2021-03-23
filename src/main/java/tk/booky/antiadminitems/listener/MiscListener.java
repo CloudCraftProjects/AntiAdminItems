@@ -4,6 +4,7 @@ package tk.booky.antiadminitems.listener;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerAttemptPickupItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -33,5 +34,13 @@ public class MiscListener implements Listener {
 
         event.setCurrentItem(ItemProcessor.processItem(event.getCurrentItem()));
         event.getInventory().setContents(ItemProcessor.processItems(event.getInventory().getContents()));
+    }
+
+    @EventHandler
+    public void onDamage(EntityDamageEvent event) {
+        if (!event.getEntity().isInvulnerable()) return;
+
+        event.setCancelled(true);
+        event.setDamage(0);
     }
 }
