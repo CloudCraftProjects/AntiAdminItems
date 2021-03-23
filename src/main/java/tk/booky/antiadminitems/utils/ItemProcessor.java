@@ -9,6 +9,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionType;
 
+import java.util.Collections;
+
 public final class ItemProcessor {
 
     public static ItemStack processItem(ItemStack item) {
@@ -50,6 +52,7 @@ public final class ItemProcessor {
 
                 meta.setAttributeModifiers(null);
                 meta.setDisplayName(ChatColor.stripColor(meta.getDisplayName()));
+                meta.setLore(Collections.emptyList());
 
                 items[i].setItemMeta(meta);
             }
