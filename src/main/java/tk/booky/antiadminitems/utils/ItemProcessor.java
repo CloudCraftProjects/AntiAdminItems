@@ -53,6 +53,7 @@ public final class ItemProcessor {
                 meta.setAttributeModifiers(null);
                 meta.setDisplayName(ChatColor.stripColor(meta.getDisplayName()));
                 meta.setLore(Collections.emptyList());
+                meta.setUnbreakable(false);
 
                 items[i].setItemMeta(meta);
             }
