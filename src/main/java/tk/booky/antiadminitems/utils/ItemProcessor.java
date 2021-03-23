@@ -17,7 +17,7 @@ public final class ItemProcessor {
 
     public static ItemStack[] processItems(ItemStack[] items) {
         for (int i = 0; i < items.length; i++) {
-            if (items[i] == null) continue;
+            if (items[i] == null || items[i].getType().isAir()) continue;
 
             if (items[i].getAmount() < 1) {
                 items[i] = Constants.REPLACE_ITEM;
