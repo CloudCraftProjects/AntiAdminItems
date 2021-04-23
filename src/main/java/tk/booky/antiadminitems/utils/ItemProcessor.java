@@ -2,6 +2,7 @@ package tk.booky.antiadminitems.utils;
 // Created by booky10 in AntiAdminItems (10:21 16.03.21)
 
 import org.bukkit.ChatColor;
+import org.bukkit.Tag;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -18,10 +19,16 @@ public final class ItemProcessor {
     }
 
     public static ItemStack[] processItems(ItemStack[] items) {
+        return processItems(items, false);
+    }
+
+    public static ItemStack[] processItems(ItemStack[] items, boolean removeShulker) {
         for (int i = 0; i < items.length; i++) {
             if (items[i] == null || items[i].getType().isAir()) continue;
 
-            if (items[i].getAmount() < 1) {
+            if (removeShulker && Tag.SHULKER_BOXES.isTagged(items[i].getType())) {
+                items[i] = Constants.REPLACE_ITEM;
+            } else if (items[i].getAmount() < 1) {
                 items[i] = Constants.REPLACE_ITEM;
             } else if (Constants.ADMIN_ITEMS.contains(items[i].getType()) || items[i].getType().name().endsWith("_SPAWN_EGG")) {
                 items[i] = Constants.REPLACE_ITEM;

@@ -1,6 +1,7 @@
 package tk.booky.antiadminitems.listener;
 // Created by booky10 in AntiAdminItems (10:38 16.03.21)
 
+import org.bukkit.Tag;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -8,6 +9,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerAttemptPickupItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
@@ -42,19 +44,24 @@ public class MiscListener implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getWhoClicked().hasPermission(Constants.BYPASS_PERMISSION) || event.getInventory().getSize() == 45 || Constants.EXCLUDED_INVENTORIES.contains(event.getView().getType())) return;
 
-        ItemStack replaced = ItemProcessor.processItem(event.getCurrentItem());
-        if (replaced == null || replaced == Constants.REPLACE_ITEM) {
+        if (event.getCurrentItem() != null && Tag.SHULKER_BOXES.isTagged(event.getCurrentItem().getType())) {
             event.setCurrentItem(Constants.REPLACE_ITEM);
             event.setCancelled(true);
-        } else if (!replaced.equals(event.getCurrentItem())) {
-            event.setCurrentItem(replaced);
+        } else {
+            ItemStack replaced = ItemProcessor.processItem(event.getCurrentItem());
+            if (replaced == null || replaced == Constants.REPLACE_ITEM) {
+                event.setCurrentItem(Constants.REPLACE_ITEM);
+                event.setCancelled(true);
+            } else if (!replaced.equals(event.getCurrentItem())) {
+                event.setCurrentItem(replaced);
+            }
         }
     }
 
     @EventHandler
     public void onInventoryOpen(InventoryOpenEvent event) {
         if (event.getPlayer().hasPermission(Constants.BYPASS_PERMISSION) || event.getInventory().getSize() == 45 || Constants.EXCLUDED_INVENTORIES.contains(event.getView().getType())) return;
-        event.getInventory().setContents(ItemProcessor.processItems(event.getInventory().getContents()));
+        event.getInventory().setContents(ItemProcessor.processItems(event.getInventory().getContents(), event.getInventory().getType().equals(InventoryType.SHULKER_BOX)));
     }
 
     @EventHandler
