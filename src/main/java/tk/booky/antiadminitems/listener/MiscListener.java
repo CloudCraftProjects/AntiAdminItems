@@ -29,7 +29,7 @@ public class MiscListener implements Listener {
         if (event.getPlayer().hasPermission(Constants.BYPASS_PERMISSION)) return;
 
         ItemStack replaced = ItemProcessor.processItem(event.getItem().getItemStack());
-        if (replaced == null || replaced.equals(Constants.REPLACE_ITEM)) {
+        if (replaced == null || replaced == Constants.REPLACE_ITEM) {
             event.setCancelled(true);
             event.getItem().remove();
         } else {
@@ -42,7 +42,7 @@ public class MiscListener implements Listener {
         if (event.getWhoClicked().hasPermission(Constants.BYPASS_PERMISSION) || event.getInventory().getSize() == 45 || Constants.EXCLUDED_INVENTORIES.contains(event.getView().getType())) return;
 
         ItemStack replaced = ItemProcessor.processItem(event.getCurrentItem());
-        if (replaced == null || replaced.equals(Constants.REPLACE_ITEM)) {
+        if (replaced == null || replaced == Constants.REPLACE_ITEM) {
             event.setCurrentItem(Constants.REPLACE_ITEM);
             event.setCancelled(true);
         } else if (!replaced.equals(event.getCurrentItem())) {
@@ -64,7 +64,7 @@ public class MiscListener implements Listener {
         if (event.getCursor().getType().isAir()) return;
 
         ItemStack replaced = ItemProcessor.processItem(event.getCursor());
-        if (replaced == null || replaced.equals(Constants.REPLACE_ITEM)) {
+        if (replaced == null || replaced == Constants.REPLACE_ITEM) {
             event.setCancelled(true);
         } else if (!replaced.equals(event.getCursor())) {
             event.setCurrentItem(replaced);
