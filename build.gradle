@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'tk.booky'
-version = '3.5-SNAPSHOT'
+version = '4.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
