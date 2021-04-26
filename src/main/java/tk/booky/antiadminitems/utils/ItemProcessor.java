@@ -29,6 +29,7 @@ public final class ItemProcessor {
         return processItems(items, removeShulker, 0);
     }
 
+    @SuppressWarnings("deprecation")
     public static ItemStack[] processItems(ItemStack[] items, boolean removeShulker, int iteration) {
         if (iteration > 2) return items;
         boolean hadBook = false;
