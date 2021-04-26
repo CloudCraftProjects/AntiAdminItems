@@ -2,6 +2,7 @@ package tk.booky.antiadminitems.listener;
 // Created by booky10 in AntiAdminItems (10:38 16.03.21)
 
 import org.bukkit.Material;
+import org.bukkit.block.Container;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,7 +15,9 @@ public class BlockListener implements Listener {
 
     @EventHandler
     public void onBreak(BlockBreakEvent event) {
-        if (event.getPlayer().hasPermission(Constants.BYPASS_PERMISSION) || !Constants.ADMIN_ITEMS.contains(event.getBlock().getType()) || event.getBlock().getType().equals(Material.SPAWNER)) return;
+        if (event.getPlayer().hasPermission(Constants.BYPASS_PERMISSION)) return;
+        if (event.getBlock().getState() instanceof Container) ((Container) event.getBlock().getState()).getInventory().setContents(ItemProcessor.processItems(((Container) event.getBlock().getState()).getInventory().getContents()));
+        if (!Constants.ADMIN_ITEMS.contains(event.getBlock().getType()) || event.getBlock().getType().equals(Material.SPAWNER)) return;
         event.setCancelled(true);
     }
 
