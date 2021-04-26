@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Tag;
 import org.bukkit.block.Container;
 import org.bukkit.block.ShulkerBox;
+import org.bukkit.block.data.Waterlogged;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
@@ -79,10 +80,16 @@ public final class ItemProcessor {
                 if (name.length() > 36) name = name.substring(0, 36);
                 meta.setDisplayName(name);
 
-                if (meta instanceof BlockStateMeta && ((BlockStateMeta) meta).getBlockState() instanceof Container) {
-                    Container container = (Container) ((BlockStateMeta) meta).getBlockState();
-                    container.getInventory().setContents(processItems(container.getInventory().getContents(), container instanceof ShulkerBox, iteration + 1));
-                    ((BlockStateMeta) meta).setBlockState(container);
+                if (meta instanceof BlockStateMeta) {
+                    if (((BlockStateMeta) meta).getBlockState() instanceof Container) {
+                        Container container = (Container) ((BlockStateMeta) meta).getBlockState();
+                        container.getInventory().setContents(processItems(container.getInventory().getContents(), container instanceof ShulkerBox, iteration + 1));
+                        ((BlockStateMeta) meta).setBlockState(container);
+                    } else if (((BlockStateMeta) meta).getBlockState().getBlockData() instanceof Waterlogged) {
+                        Waterlogged waterlogged = (Waterlogged) ((BlockStateMeta) meta).getBlockState().getBlockData();
+                        waterlogged.setWaterlogged(false);
+                        ((BlockStateMeta) meta).getBlockState().setBlockData(waterlogged);
+                    }
                 }
 
                 items[i].setItemMeta(meta);
