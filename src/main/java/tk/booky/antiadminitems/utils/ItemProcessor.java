@@ -23,10 +23,15 @@ public final class ItemProcessor {
     }
 
     public static ItemStack[] processItems(ItemStack[] items, boolean removeShulker) {
+        boolean hadBook = false;
+
         for (int i = 0; i < items.length; i++) {
             if (items[i] == null || items[i].getType().isAir()) continue;
+            boolean isBook = Tag.ITEMS_LECTERN_BOOKS.isTagged(items[i].getType());
 
-            if (removeShulker && Tag.SHULKER_BOXES.isTagged(items[i].getType())) {
+            if (isBook && hadBook) {
+                items[i] = Constants.REPLACE_ITEM;
+            } else if (removeShulker && Tag.SHULKER_BOXES.isTagged(items[i].getType())) {
                 items[i] = Constants.REPLACE_ITEM;
             } else if (items[i].getAmount() < 1) {
                 items[i] = Constants.REPLACE_ITEM;
@@ -42,7 +47,7 @@ public final class ItemProcessor {
                     }
                 }
 
-                items[i].setAmount(Math.min(items[i].getAmount(), items[i].getMaxStackSize()));
+                items[i].setAmount(Math.min(items[i].getAmount(), isBook ? 1 : items[i].getMaxStackSize()));
                 boolean isAxe = items[i].getType().name().endsWith("_AXE");
                 int currentIndex = i;
 
@@ -63,6 +68,7 @@ public final class ItemProcessor {
                 meta.setUnbreakable(false);
 
                 items[i].setItemMeta(meta);
+                if (isBook) hadBook = true;
             }
         }
 
