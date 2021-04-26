@@ -3,8 +3,11 @@ package tk.booky.antiadminitems.utils;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Tag;
+import org.bukkit.block.Container;
+import org.bukkit.block.ShulkerBox;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -23,6 +26,11 @@ public final class ItemProcessor {
     }
 
     public static ItemStack[] processItems(ItemStack[] items, boolean removeShulker) {
+        return processItems(items, removeShulker, 0);
+    }
+
+    public static ItemStack[] processItems(ItemStack[] items, boolean removeShulker, int iteration) {
+        if (iteration > 2) return items;
         boolean hadBook = false;
 
         for (int i = 0; i < items.length; i++) {
@@ -66,6 +74,12 @@ public final class ItemProcessor {
                 meta.setDisplayName(ChatColor.stripColor(meta.getDisplayName()));
                 meta.setLore(Collections.emptyList());
                 meta.setUnbreakable(false);
+
+                if (meta instanceof BlockStateMeta && ((BlockStateMeta) meta).getBlockState() instanceof Container) {
+                    Container container = (Container) ((BlockStateMeta) meta).getBlockState();
+                    container.getInventory().setContents(processItems(container.getInventory().getContents(), container instanceof ShulkerBox, iteration + 1));
+                    ((BlockStateMeta) meta).setBlockState(container);
+                }
 
                 items[i].setItemMeta(meta);
                 if (isBook) hadBook = true;
