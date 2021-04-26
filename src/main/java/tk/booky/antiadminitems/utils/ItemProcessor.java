@@ -71,9 +71,12 @@ public final class ItemProcessor {
                 if (meta instanceof FireworkMeta && ((FireworkMeta) meta).hasEffects() && ((FireworkMeta) meta).getEffectsSize() > 8) ((FireworkMeta) meta).clearEffects();
 
                 meta.setAttributeModifiers(null);
-                meta.setDisplayName(ChatColor.stripColor(meta.getDisplayName()));
-                meta.setLore(Collections.emptyList());
+                meta.lore(Collections.emptyList());
                 meta.setUnbreakable(false);
+
+                String name = ChatColor.stripColor(meta.getDisplayName());
+                if (name.length() > 36) name = name.substring(0, 36);
+                meta.setDisplayName(name);
 
                 if (meta instanceof BlockStateMeta && ((BlockStateMeta) meta).getBlockState() instanceof Container) {
                     Container container = (Container) ((BlockStateMeta) meta).getBlockState();
