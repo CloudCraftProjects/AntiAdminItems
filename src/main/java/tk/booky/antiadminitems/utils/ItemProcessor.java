@@ -1,20 +1,22 @@
 package tk.booky.antiadminitems.utils;
 // Created by booky10 in AntiAdminItems (10:21 16.03.21)
 
+import com.destroystokyo.paper.inventory.meta.ArmorStandMeta;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.Container;
-import org.bukkit.block.ShulkerBox;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Waterlogged;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
+import org.bukkit.inventory.meta.CrossbowMeta;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionType;
 
 import java.util.Collections;
+import java.util.Map;
 
 public final class ItemProcessor {
 
@@ -26,74 +28,71 @@ public final class ItemProcessor {
         return processItems(items, false);
     }
 
-    public static ItemStack[] processItems(ItemStack[] items, boolean removeShulker) {
-        return processItems(items, removeShulker, 0);
-    }
-
     @SuppressWarnings("deprecation")
-    public static ItemStack[] processItems(ItemStack[] items, boolean removeShulker, int iteration) {
-        if (iteration > 2) return items;
-        boolean hadBook = false;
-
+    public static ItemStack[] processItems(ItemStack[] items, boolean removeShulker) {
         for (int i = 0; i < items.length; i++) {
-            if (items[i] == null || items[i].getType().isAir()) continue;
-            boolean isBook = Tag.ITEMS_LECTERN_BOOKS.isTagged(items[i].getType());
+            if (items[i] == null) continue;
 
-            if (isBook && hadBook) {
-                items[i] = Constants.REPLACE_ITEM;
-            } else if (removeShulker && Tag.SHULKER_BOXES.isTagged(items[i].getType())) {
+            Material material = items[i].getType();
+            if (material.isAir()) continue;
+
+            if (removeShulker && Tag.SHULKER_BOXES.isTagged(material)) {
                 items[i] = Constants.REPLACE_ITEM;
             } else if (items[i].getAmount() < 1) {
                 items[i] = Constants.REPLACE_ITEM;
-            } else if (Constants.ADMIN_ITEMS.contains(items[i].getType()) || items[i].getType().name().endsWith("_SPAWN_EGG")) {
+            } else if (Constants.ADMIN_ITEMS.contains(material) || material.name().endsWith("_SPAWN_EGG")) {
                 items[i] = Constants.REPLACE_ITEM;
             } else {
-                ItemMeta meta = items[i].getItemMeta();
+                if (material.name().endsWith("POTION")) {
+                    items[i] = Constants.REPLACE_ITEM;
+                } else {
+                    items[i].setAmount(Math.min(items[i].getAmount(), items[i].getMaxStackSize()));
+                    ItemMeta meta = items[i].getItemMeta();
 
-                if (items[i].getType().name().endsWith("POTION")) {
-                    if (((PotionMeta) meta).getBasePotionData().getType().equals(PotionType.UNCRAFTABLE)) {
-                        items[i] = Constants.REPLACE_ITEM;
-                        continue;
+                    for (Map.Entry<Enchantment, Integer> entry : meta.getEnchants().entrySet()) {
+                        Enchantment enchantment = entry.getKey();
+                        int level = entry.getValue();
+
+                        if (level < enchantment.getStartLevel() || (!enchantment.getItemTarget().includes(material))) {
+                            meta.removeEnchant(enchantment);
+                        } else if (level > enchantment.getMaxLevel()) {
+                            meta.removeEnchant(enchantment);
+                            meta.addEnchant(enchantment, enchantment.getMaxLevel(), true);
+                        }
                     }
+
+                    if (meta instanceof BlockStateMeta) {
+                        BlockData data = ((BlockStateMeta) meta).getBlockState().getBlockData();
+
+                        if (data instanceof Waterlogged) {
+                            Waterlogged waterlogged = (Waterlogged) ((BlockStateMeta) meta).getBlockState().getBlockData();
+                            waterlogged.setWaterlogged(false);
+                            ((BlockStateMeta) meta).getBlockState().setBlockData(waterlogged);
+                        }
+
+                        if (data instanceof Container) {
+                            ((Container) data).getInventory().clear();
+                        }
+                    } else if (meta instanceof CrossbowMeta) {
+                        ((CrossbowMeta) meta).setChargedProjectiles(Collections.emptyList());
+                    } else if (meta instanceof ArmorStandMeta) {
+                        meta = null;
+                    } else if (meta instanceof FireworkMeta) {
+                        ((FireworkMeta) meta).clearEffects();
+                    }
+
+                    if (meta != null) {
+                        meta.setAttributeModifiers(null);
+                        meta.lore(Collections.emptyList());
+                        meta.setUnbreakable(false);
+
+                        String name = ChatColor.stripColor(meta.getDisplayName());
+                        if (name.length() > 36) name = name.substring(0, 36);
+                        meta.setDisplayName(name);
+                    }
+
+                    items[i].setItemMeta(meta);
                 }
-
-                items[i].setAmount(Math.min(items[i].getAmount(), isBook ? 1 : items[i].getMaxStackSize()));
-                boolean isAxe = items[i].getType().name().endsWith("_AXE");
-                int currentIndex = i;
-
-                meta.getEnchants().forEach((enchantment, level) -> {
-                    if (level < enchantment.getStartLevel() || (!enchantment.getItemTarget().includes(items[currentIndex].getType()) && !(isAxe && enchantment.equals(Enchantment.DAMAGE_ALL) && !enchantment.equals(Enchantment.THORNS)))) {
-                        meta.removeEnchant(enchantment);
-                    } else if (level > enchantment.getMaxLevel()) {
-                        meta.removeEnchant(enchantment);
-                        meta.addEnchant(enchantment, enchantment.getMaxLevel(), true);
-                    }
-                });
-
-                if (meta instanceof FireworkMeta && ((FireworkMeta) meta).hasEffects() && ((FireworkMeta) meta).getEffectsSize() > 8) ((FireworkMeta) meta).clearEffects();
-
-                meta.setAttributeModifiers(null);
-                meta.lore(Collections.emptyList());
-                meta.setUnbreakable(false);
-
-                String name = ChatColor.stripColor(meta.getDisplayName());
-                if (name.length() > 36) name = name.substring(0, 36);
-                meta.setDisplayName(name);
-
-                if (meta instanceof BlockStateMeta) {
-                    if (((BlockStateMeta) meta).getBlockState() instanceof Container) {
-                        Container container = (Container) ((BlockStateMeta) meta).getBlockState();
-                        container.getInventory().setContents(processItems(container.getInventory().getContents(), container instanceof ShulkerBox, iteration + 1));
-                        ((BlockStateMeta) meta).setBlockState(container);
-                    } else if (((BlockStateMeta) meta).getBlockState().getBlockData() instanceof Waterlogged) {
-                        Waterlogged waterlogged = (Waterlogged) ((BlockStateMeta) meta).getBlockState().getBlockData();
-                        waterlogged.setWaterlogged(false);
-                        ((BlockStateMeta) meta).getBlockState().setBlockData(waterlogged);
-                    }
-                }
-
-                items[i].setItemMeta(meta);
-                if (isBook) hadBook = true;
             }
         }
 

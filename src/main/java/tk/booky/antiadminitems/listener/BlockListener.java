@@ -27,8 +27,7 @@ public class BlockListener implements Listener {
 
         if (!Constants.ADMIN_ITEMS.contains(event.getBlock().getType())) {
             if (!(event.getBlock().getState() instanceof ShulkerBox)) return;
-            ShulkerBox shulker = (ShulkerBox) event.getBlock().getState();
-            shulker.getInventory().setContents(ItemProcessor.processItems(shulker.getInventory().getContents(), true));
+            ((ShulkerBox) event.getBlock().getState()).getInventory().clear();
         } else {
             if (event.getItemInHand().getType().equals(Material.ENDER_EYE) && event.getBlock().getType().equals(Material.END_PORTAL_FRAME)) return;
             event.setCancelled(true);
