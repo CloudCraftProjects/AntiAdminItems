@@ -14,11 +14,10 @@ repositories {
 
     maven { url = 'https://papermc.io/repo/repository/maven-public/' }
     maven { url = 'https://oss.sonatype.org/content/groups/public/' }
-    maven { url = 'https://repo.codemc.io/repository/maven-public/' }
 }
 
 dependencies {
-    implementation 'org.yatopiamc:yatopia-api:1.16.5-R0.1-SNAPSHOT'
+    implementation 'io.papermc.paper:paper-api:1.17-R0.1-SNAPSHOT'
 }
 
 processResources {
