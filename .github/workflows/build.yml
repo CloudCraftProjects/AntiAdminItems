@@ -1,0 +1,49 @@
+name: Build
+on: [ push ]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    strategy:
+      matrix:
+        java: [ 16 ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Java ${{ matrix.java }}
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+
+      - name: Caching
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('build.gradle', 'gradle.properties', 'gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: ${{ runner.os }}-gradle-
+
+      - name: Build Jar
+        run: ./gradlew build
+
+      - name: Upload Jar
+        uses: actions/upload-artifact@v2
+        with:
+          name: AntiAdminItems-JDK${{ matrix.java }}
+          path: build/libs
+
+  notify:
+    runs-on: ubuntu-20.04
+    if: always()
+
+    needs: [ build ]
+    steps:
+      - name: Send Webhook
+        run: |
+          git clone https://github.com/Encode42/discord-workflows-webhook.git webhook
+          bash webhook/send.sh ${{ needs.build.result }} ${{ secrets.WEBHOOK_URL }}
+        shell: bash
