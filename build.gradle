@@ -6,23 +6,21 @@ plugins {
 }
 
 group = 'tk.booky'
-version = '4.2-SNAPSHOT'
+version = '4.2.2'
 
 repositories {
-    mavenCentral()
-    mavenLocal()
-
     maven { url = 'https://papermc.io/repo/repository/maven-public/' }
     maven { url = 'https://oss.sonatype.org/content/groups/public/' }
 }
 
 dependencies {
-    implementation 'io.papermc.paper:paper-api:1.17-R0.1-SNAPSHOT'
+    implementation 'io.papermc.paper:paper-api:1.17.1-R0.1-SNAPSHOT'
 }
 
 processResources {
     duplicatesStrategy(DuplicatesStrategy.INCLUDE)
     from(sourceSets.main.resources.srcDirs) {
+        // noinspection all
         filter ReplaceTokens, tokens: [version: version]
     }
 }
